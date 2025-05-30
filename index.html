@@ -113,7 +113,8 @@
         .time-date-section .current-time {
             font-size: 24px; /* Time size */
             font-weight: 800; /* Bold weight for numbers */
-            color: #007bff; /* Blue color for time */
+            /* CHANGED: Font color for the timer text */
+            color: #26a3b9;
              /* Ensure font family is applied */
              font-family: 'Poppins', sans-serif;
         }
@@ -329,6 +330,110 @@
          }
         /* --- End Footer Section Styles --- */
 
+        /* --- Desktop Responsive Layout Changes --- */
+        @media (min-width: 768px) { /* Apply styles for screens 768px and wider */
+
+            .container {
+                width: 600px; /* Make the container wider on desktop */
+                padding: 35px; /* Maybe a bit more padding */
+            }
+
+            /* The search box usually looks fine, but you could adjust if needed */
+            /* .search-box input { font-size: 22px; padding: 14px 18px; } */
+            /* .search-box button { width: 50px; height: 50px; font-size: 22px; } */
+
+             /* Adjustments for the "second page" content */
+            .second-page-content {
+                 gap: 25px; /* Increase space between main sections slightly */
+            }
+
+            /* Weather Body Adjustments for Wider Screen */
+            .weather-body img {
+                width: 40%; /* Make the weather image slightly smaller relative to the wider container */
+                margin-block: 15px; /* Adjust vertical margin */
+            }
+
+             .weather-box .temperature {
+                 font-size: 50px; /* Make temperature a bit bigger */
+             }
+
+             .weather-box .description {
+                 font-size: 22px; /* Make description a bit bigger */
+             }
+
+             .weather-details {
+                 margin-top: 40px; /* More space below weather box */
+             }
+
+            /* Forecast Section Adjustments */
+            .forecast-section {
+                 margin-top: 25px; /* Adjust space above forecast */
+            }
+
+             .forecast-section h2 {
+                 font-size: 20px; /* Make forecast title bigger */
+                 margin-bottom: 20px;
+             }
+
+            .forecast-cards {
+                overflow-x: visible; /* Disable horizontal scrolling on wider screens */
+                justify-content: space-around; /* Distribute cards with space around them */
+                gap: 15px; /* Increase gap slightly for better spacing */
+                padding-bottom: 0; /* Remove padding added for scrollbar */
+            }
+
+            .forecast-card {
+                 min-width: 110px; /* Ensure cards don't get too small */
+                 padding: 12px;
+            }
+
+            .forecast-card .day { font-size: 15px; }
+            .forecast-card img { width: 55px; }
+            .forecast-card .temp { font-size: 18px; }
+            .forecast-card .description { font-size: 13px; }
+
+
+            /* Footer Adjustments */
+            .footer-hr {
+                margin-top: 30px; /* More space above footer HR */
+            }
+
+            .footer-section {
+                font-size: 13px; /* Slightly larger footer text */
+            }
+        }
+
+        /* Optional: Add another breakpoint for even larger desktops (e.g., 992px) */
+        @media (min-width: 992px) {
+             .container {
+                 width: 750px; /* Make it even wider */
+             }
+             .weather-body img {
+                 width: 35%; /* Even smaller image relative to width */
+             }
+              .forecast-cards {
+                  gap: 20px; /* Even larger gap */
+              }
+               .forecast-card {
+                   min-width: 120px; /* Allow cards to be a bit wider */
+               }
+        }
+
+        /* Adjust font for Poppins Thin 100 Italic where specified */
+        .search-box input,
+        .time-date-section,
+        .second-page-content hr + .greeting, /* Target greeting directly following HR */
+        .footer-section {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 100;
+            font-style: italic;
+        }
+
+         /* Ensure default text elements within .text use sans-serif fallback */
+         .weather-details .text p {
+             font-family: sans-serif; /* Use fallback font for 'Humidity'/'Wind Speed' labels */
+         }
+
 
     </style>
 
@@ -355,7 +460,7 @@
 
             <!-- Time and Date Section (above HR) -->
             <div class="time-date-section">
-                 <p class="current-time">00:00:00</p> <!-- Time -->
+                 <p class="current-time">00:00:00</p> <!-- Time - This will be updated by JS -->
                  <p class="current-date">Date</p> <!-- Date -->
             </div>
             <!-- End Time and Date Section -->
@@ -439,32 +544,41 @@
         function updateDateTimeAndGreeting() {
             const now = new Date();
 
-            // Get time components
-            const hours = now.getHours();
+            // Get time components (24-hour format)
+            const hours24 = now.getHours();
             const minutes = now.getMinutes();
             const seconds = now.getSeconds();
 
-            // Format time with leading zeros (HH:MM:SS)
-            const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            timeElement.textContent = formattedTime;
+            // --- Format time in 12-hour format (h:MM:SS AM/PM) ---
+            const ampm = hours24 >= 12 ? 'PM' : 'AM'; // Determine AM or PM
+            let hours12 = hours24 % 12; // Convert 0-23 to 0-11
+            hours12 = hours12 ? hours12 : 12; // Convert 0 (midnight) to 12
 
-            // Determine greeting based on hour
+            // Format minutes and seconds with leading zeros
+            const formattedMinutes = String(minutes).padStart(2, '0');
+            const formattedSeconds = String(seconds).padStart(2, '0');
+
+            // Combine for the final formatted time string
+            const formattedTime = `${hours12}:${formattedMinutes}:${formattedSeconds} ${ampm}`;
+            timeElement.textContent = formattedTime; // Update the time element
+
+            // --- Determine greeting based on 24-hour format ---
             let greeting = "Hello!"; // Default for times outside defined ranges
-            if (hours >= 5 && hours < 12) {
+            if (hours24 >= 5 && hours24 < 12) {
                 greeting = "Good Morning!"; // காலை 5 மணி முதல் 11 மணி 59 நிமிடம் வரை
-            } else if (hours >= 12 && hours < 17) {
+            } else if (hours24 >= 12 && hours24 < 17) {
                 greeting = "Good Afternoon!"; // பகல் 12 மணி முதல் மாலை 4 மணி 59 நிமிடம் வரை
-            } else if (hours >= 17 && hours < 21) {
+            } else if (hours24 >= 17 && hours24 < 21) {
                 greeting = "Good Evening!"; // மாலை 5 மணி முதல் இரவு 8 மணி 59 நிமிடம் வரை
             } else { // hours 21, 22, 23, 0, 1, 2, 3, 4
                 greeting = "Good Night!"; // இரவு 9 மணி முதல் காலை 4 மணி 59 நிமிடம் வரை
             }
-            greetingElement.textContent = greeting;
+            greetingElement.textContent = greeting; // Update the greeting element
 
-            // Get date components and format (e.g., Friday, May 30, 2025)
+            // --- Get date components and format (e.g., Friday, May 30, 2025) ---
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const formattedDate = now.toLocaleDateString('en-US', options); // Use locale string for full date
-            dateElement.textContent = formattedDate;
+            dateElement.textContent = formattedDate; // Update the date element
         }
 
         // Start the time/date update (it runs in the background even if hidden)
@@ -491,11 +605,12 @@
         const api_key = "105492d9afbc089c7e7f6225a38770e9";
 
         // Helper function to get weather image URL based on main weather condition
-        function getWeatherImage(weatherMain) {
+        function getWeatherImage(weatherMain){
             switch(weatherMain){
                 case 'Clouds':
                     return "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/cloud.png";
                 case 'Clear':
+                    // This is where the clear image URL is used
                     return "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/clear.png";
                 case 'Rain':
                 case 'Drizzle': // Treat Drizzle and Rain similarly for images
@@ -571,6 +686,7 @@
                         const options = { weekday: 'short' }; // Get short day name (e.g., Mon)
                         const dayName = date.toLocaleDateString('en-US', options);
 
+                        // Use the helper function to get the correct icon URL
                         const iconUrl = getWeatherImage(dayData.weather[0].main);
                         const temp = Math.round(dayData.main.temp);
                         const description = dayData.weather[0].description;
@@ -612,8 +728,11 @@
                 description.innerHTML = ``;
                 humidity.innerHTML = `45%`;
                 wind_speed.innerHTML = `12Km/H`;
+                // Reset default image to CLOUD URL when input is empty
                 weather_img.src = "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/cloud.png";
                 forecast_cards_container.innerHTML = '';
+                forecast_section.style.display = 'none'; // Ensure forecast is hidden if input is empty
+                location_not_found.style.display = "none"; // Also hide not found
                 return; // Stop here
             }
 
