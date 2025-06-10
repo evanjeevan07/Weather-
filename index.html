@@ -4,69 +4,96 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather App With JavaScript</title>
+    <title>Tamil Nadu District Weather App</title> <!-- Title in English -->
 
     <!-- Google Font: Poppins Thin 100 Italic -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@1,100&display=swap" rel="stylesheet">
+    <!-- Google Font: Teko Regular 400 -->
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400&display=swap" rel="stylesheet">
 
-    <!-- Your combined CSS styles -->
+    <!-- Font Awesome CDN - Using a standard link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <style>
+        /* --- General Styles --- */
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Teko', sans-serif;
+            background-color: #000; /* Static background color */
+        }
+
         *{
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             border: none;
             outline: none;
-            font-family: sans-serif; /* Default fallback */
-        }
-
-        body{
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #000;
         }
 
         .container{
             width: 400px;
-            height: min-content; /* Adjusted */
+            height: min-content;
             background-color: #fff;
             border-radius: 12px;
             padding: 28px;
-            /* Allow vertical stacking of sections */
             display: flex;
             flex-direction: column;
-            gap: 20px; /* Space between main sections like search box and second page content */
+            gap: 20px; /* Gap between sections */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* --- Styles for the Search Box (Always visible) --- */
+        /* --- Styles for the Header (contains search box only) --- */
+        .header {
+            width: 100%;
+            height: min-content;
+            display: block;
+            margin-bottom: 0;
+        }
+
+        /* --- Styles for the Search Box (inside header) --- */
         .search-box{
             width: 100%;
             height: min-content;
-            display: flex; /* Keep flex for layout */
+            display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
         }
 
-        .search-box input{
+        .search-box .input-box{ /* Applies to the select dropdown */
             width: 84%;
+            flex-grow: 0;
+            flex-shrink: 1;
             font-size: 20px;
             text-transform: capitalize;
             color: #000;
             background-color: #e6f5fb;
             padding: 12px 16px;
             border-radius: 14px;
-            /* Apply Poppins Thin 100 Italic here */
             font-family: 'Poppins', sans-serif;
-            font-weight: 100; /* Thin */
+            font-weight: 100;
             font-style: italic;
-             /* Align text center inside input as per image */
-             text-align: center;
+            text-align: center;
+            cursor: pointer;
+
+            /* Custom dropdown arrow */
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M287%2C114.7L159.2%2C21.2c-5.8-3.5-13.1-3.5-18.9%2C0L5.4%2C114.7c-5.8%2C3.5-5.8%2C9.5%2C0%2C13l127.8%2C93.5c5.8%2C3.5%2C13.1%2C3.5%2C18.9%2C0l127.8-93.5C292.8%2C124.2%2C292.8%2C118.2%2C287%2C114.7z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 12px;
+            padding-right: 30px;
         }
 
-        .search-box input::placeholder{
-            color: #000;
+        .search-box .input-box option:first-child {
+             color: #555;
         }
 
         .search-box button{
@@ -75,92 +102,84 @@
             background-color: #e6f5fb;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 20px; /* Controls icon size */
-            display: flex; /* Added for centering the icon */
-            justify-content: center; /* Added for centering the icon */
-            align-items: center; /* Added for centering the icon */
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            color: #555;
         }
 
         .search-box button:hover{
             color: #fff;
             background-color: #ababab;
         }
-         /* --- End Styles for Search Box --- */
+        /* --- End Styles for Search Box --- */
 
 
         /* --- Styles for the content that appears AFTER search --- */
         /* Initially hide this entire section */
         .second-page-content {
             display: none; /* Hidden by default */
-            flex-direction: column; /* Stack its children vertically */
-            gap: 20px; /* Space between elements inside the second page */
+            flex-direction: column;
+            gap: 20px; /* Gap between sections */
+            position: relative;
         }
 
-        /* Styles for the Time and Date line (above HR) */
+        /* Styles for the Time and Date line */
         .time-date-section {
             text-align: center;
-            /* Use flexbox to put time and date side-by-side */
             display: flex;
-            justify-content: center; /* Center the time/date pair */
-            align-items: center; /* Align vertically */
-            gap: 15px; /* Space between time and date */
-            /* Apply Poppins Thin 100 Italic */
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
             font-family: 'Poppins', sans-serif;
             font-weight: 100;
             font-style: italic;
+            color: #555;
+            margin-top: 0;
         }
 
         .time-date-section .current-time {
-            font-size: 24px; /* Time size */
-            font-weight: 800; /* Bold weight for numbers */
-            /* CHANGED: Font color for the timer text */
+            font-size: 24px;
+            font-weight: 800;
             color: #26a3b9;
-             /* Ensure font family is applied */
-             font-family: 'Poppins', sans-serif;
+            font-family: 'Teko', sans-serif;
         }
 
         .time-date-section .current-date {
-            font-size: 14px; /* Date size */
-            color: #555; /* Slightly darker grey */
-             /* Ensure thin/italic is inherited or explicitly set */
-             font-weight: 100;
-             font-style: italic;
+            font-size: 14px;
         }
-        /* --- End Styles for Time/Date Section --- */
 
-        /* Style for the HR tag - between Time/Date and Greeting */
-        .second-page-content hr { /* Target HR specifically within second-page-content */
-            border: 0;
-            height: 1px;
-            background: #ccc; /* Light grey line */
-            margin: 10px 0; /* Space above (from time/date) and below (to greeting) */
-        }
-        /* --- End Style for HR tag --- */
-
-        /* Styles for the Greeting below the HR */
-        .second-page-content .greeting { /* Target Greeting specifically within second-page-content */
+        /* Styles for the Greeting */
+        .greeting {
             text-align: center;
-            font-size: 18px; /* Greeting size */
-            /* Apply Poppins Thin 100 Italic */
+            font-size: 18px;
             font-family: 'Poppins', sans-serif;
             font-weight: 100;
             font-style: italic;
-            color: #333; /* Greeting text color */
-            /* No margin-bottom here as gap handles space below it */
-             margin: 0; /* Reset potential default margins */
+            color: #333;
+            margin: 0;
         }
-        /* --- End Styles for Greeting --- */
 
+        /* Style for HR tags between sections */
+        .second-page-content hr {
+            border: 0;
+            height: 1px;
+            background: #ccc;
+            margin: 0; /* Gap is handled by container */
+        }
 
-        /* --- Styles for Weather Body, Not Found, Forecast (Part of Second Page) --- */
+        /* --- Styles for Weather Body --- */
         .weather-body{
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            margin-block: 20px; /* Add vertical margin */
+            margin-block: 0;
             display: none; /* Initially hidden, controlled by JS */
         }
-        .weather-body img{
+        .weather-body .weather-img{
             width: 60%;
         }
 
@@ -172,19 +191,24 @@
         .weather-box .temperature{
             font-size: 40px;
             font-weight: 800;
+            font-family: 'Teko', sans-serif;
             position: relative;
+            color: #000;
         }
 
         .weather-box .temperature sup{
             font-size: 20px;
             position: absolute;
             font-weight: 600;
+            font-family: 'Teko', sans-serif;
         }
 
         .weather-box .description{
             font-size: 20px;
-            font-weight: 700;
+            font-weight: 400;
             text-transform: capitalize;
+            font-family: 'Teko', sans-serif;
+            color: #333;
         }
 
         .weather-details{
@@ -197,6 +221,7 @@
         .humidity, .wind{
             display: flex;
             align-items: center;
+            color: #000;
         }
 
         .humidity{
@@ -207,20 +232,11 @@
             margin-right: 20px;
         }
 
-         /* Style for the humidity image */
-        .humidity img {
-            width: 36px; /* Match the size of the wind icon */
-            height: 36px; /* Keep aspect ratio or set fixed height */
-            object-fit: contain; /* Ensure the image fits without stretching */
+        .humidity img, .wind img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
         }
-
-         /* Style for the wind image */
-        .wind img {
-            width: 36px; /* Match the size of the humidity icon */
-            height: 36px; /* Keep aspect ratio or set fixed height */
-            object-fit: contain; /* Ensure the image fits without stretching */
-        }
-
 
         .weather-details .text{
             margin-left: 10px;
@@ -230,24 +246,39 @@
         .text span{
             font-size: 20px;
             font-weight: 700;
+            font-family: 'Teko', sans-serif;
+            color: #26a3b9;
         }
 
+        .weather-details .text p {
+             font-family: 'Teko', sans-serif;
+             font-weight: 800;
+        }
+
+        /* --- Styles for Location Not Found --- */
         .location-not-found{
-            margin-top: 20px;
+            margin-top: 0;
             display: none; /* Initially hidden, controlled by JS */
             align-items: center;
             justify-content: center;
             flex-direction: column;
+            text-align: center;
         }
 
-        /* Keep as local path, assuming you've uploaded 404.png on onecompiler's assets */
+        .location-not-found h1 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #d9534f;
+        }
+
         .location-not-found img{
             width: 80%;
+            max-width: 300px;
         }
 
-        /* --- Forecast Section Styles --- */
+        /* --- Forecast Section Styles (for both hourly and daily) --- */
         .forecast-section {
-            margin-top: 20px;
+            margin-top: 0;
             display: none; /* Initially hidden, controlled by JS */
             flex-direction: column;
             align-items: center;
@@ -258,273 +289,275 @@
             margin-bottom: 15px;
             color: #333;
             text-align: center;
+            font-family: 'Teko', sans-serif;
+            font-weight: 400;
         }
 
         .forecast-cards {
             width: 100%;
             display: flex;
-            justify-content: space-between; /* Distribute cards horizontally */
-            gap: 10px; /* Space between cards */
-            overflow-x: auto; /* Allow horizontal scrolling if cards don't fit */
-            padding-bottom: 10px; /* Add padding for scrollbar */
+            justify-content: flex-start; /* Align cards to the start (left) */
+            gap: 10px;
+            overflow-x: auto; /* Allows horizontal scrolling if needed */
+            padding-bottom: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: #ccc #f1f1f1;
         }
 
+        /* Customize scrollbar for Webkit */
+        .forecast-cards::-webkit-scrollbar { height: 8px; }
+        .forecast-cards::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .forecast-cards::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+
+        /* Forecast card styles */
         .forecast-card {
-            min-width: 120px; /* Minimum width for each card */
-            flex-shrink: 0; /* Prevent shrinking */
-            background-color: #e6f5fb; /* Background similar to input/button */
+            min-width: 75px;
+            flex-basis: auto;
+            flex-grow: 0;
+            flex-shrink: 0;
+            background-color: #e6f5fb;
             border-radius: 10px;
-            padding: 10px;
+            padding: 10px 5px;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
+            font-family: 'Teko', sans-serif;
+            color: #000;
         }
 
-        .forecast-card .day {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 5px;
+        .forecast-card .time { /* Used for Time in Hourly, Day in Daily */
+             font-size: 14px;
+             font-weight: 600;
+             margin-bottom: 5px;
         }
 
         .forecast-card img {
-            width: 50px; /* Size for forecast icons */
+            width: 40px;
             margin-bottom: 5px;
         }
 
         .forecast-card .temp {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             margin-bottom: 5px;
         }
 
          .forecast-card .description {
-            font-size: 12px;
+            font-size: 10px;
             text-transform: capitalize;
             color: #555;
+            word-break: break-word;
+            white-space: normal;
          }
-         /* --- End Weather Body, Not Found, Forecast --- */
+
+         /* --- Styles for the Weather Scene Image --- */
+         .weather-scene-img {
+             width: calc(100% + 56px);
+             height: 180px;
+             object-fit: contain;
+             margin: 0 -28px -28px -28px; /* Negative margins left/right/bottom */
+             border-radius: 0 0 12px 12px;
+             display: block;
+         }
 
         /* --- Footer Section Styles --- */
-        .footer-section {
-            text-align: center;
-            margin-top: 20px; /* Space above the footer */
-            font-size: 12px;
-            color: #777; /* Grey color for footer text */
-             /* Apply Poppins Thin 100 Italic */
-            font-family: 'Poppins', sans-serif;
-            font-weight: 100;
-            font-style: italic;
-        }
-
-        .footer-section p {
-             margin-bottom: 5px; /* Space between lines in the footer */
-        }
-
-        /* Style for the HR tag above the footer */
-         .footer-hr {
+        .footer-hr {
             border: 0;
             height: 1px;
-            background: #ccc; /* Light grey line */
-            margin: 20px 0 10px 0; /* Space above footer, less space below */
+            background: #ccc;
+            margin: 20px 0 10px 0;
          }
-        /* --- End Footer Section Styles --- */
 
-        /* --- Desktop Responsive Layout Changes --- */
-        @media (min-width: 768px) { /* Apply styles for screens 768px and wider */
-
-            .container {
-                width: 600px; /* Make the container wider on desktop */
-                padding: 35px; /* Maybe a bit more padding */
-            }
-
-            /* The search box usually looks fine, but you could adjust if needed */
-            /* .search-box input { font-size: 22px; padding: 14px 18px; } */
-            /* .search-box button { width: 50px; height: 50px; font-size: 22px; } */
-
-             /* Adjustments for the "second page" content */
-            .second-page-content {
-                 gap: 25px; /* Increase space between main sections slightly */
-            }
-
-            /* Weather Body Adjustments for Wider Screen */
-            .weather-body img {
-                width: 40%; /* Make the weather image slightly smaller relative to the wider container */
-                margin-block: 15px; /* Adjust vertical margin */
-            }
-
-             .weather-box .temperature {
-                 font-size: 50px; /* Make temperature a bit bigger */
-             }
-
-             .weather-box .description {
-                 font-size: 22px; /* Make description a bit bigger */
-             }
-
-             .weather-details {
-                 margin-top: 40px; /* More space below weather box */
-             }
-
-            /* Forecast Section Adjustments */
-            .forecast-section {
-                 margin-top: 25px; /* Adjust space above forecast */
-            }
-
-             .forecast-section h2 {
-                 font-size: 20px; /* Make forecast title bigger */
-                 margin-bottom: 20px;
-             }
-
-            .forecast-cards {
-                overflow-x: visible; /* Disable horizontal scrolling on wider screens */
-                justify-content: space-around; /* Distribute cards with space around them */
-                gap: 15px; /* Increase gap slightly for better spacing */
-                padding-bottom: 0; /* Remove padding added for scrollbar */
-            }
-
-            .forecast-card {
-                 min-width: 110px; /* Ensure cards don't get too small */
-                 padding: 12px;
-            }
-
-            .forecast-card .day { font-size: 15px; }
-            .forecast-card img { width: 55px; }
-            .forecast-card .temp { font-size: 18px; }
-            .forecast-card .description { font-size: 13px; }
-
-
-            /* Footer Adjustments */
-            .footer-hr {
-                margin-top: 30px; /* More space above footer HR */
-            }
-
-            .footer-section {
-                font-size: 13px; /* Slightly larger footer text */
-            }
-        }
-
-        /* Optional: Add another breakpoint for even larger desktops (e.g., 992px) */
-        @media (min-width: 992px) {
-             .container {
-                 width: 750px; /* Make it even wider */
-             }
-             .weather-body img {
-                 width: 35%; /* Even smaller image relative to width */
-             }
-              .forecast-cards {
-                  gap: 20px; /* Even larger gap */
-              }
-               .forecast-card {
-                   min-width: 120px; /* Allow cards to be a bit wider */
-               }
-        }
-
-        /* Adjust font for Poppins Thin 100 Italic where specified */
-        .search-box input,
-        .time-date-section,
-        .second-page-content hr + .greeting, /* Target greeting directly following HR */
         .footer-section {
+            text-align: center;
+            margin-top: 0;
+            font-size: 12px;
+            color: #777;
             font-family: 'Poppins', sans-serif;
             font-weight: 100;
             font-style: italic;
         }
 
-         /* Ensure default text elements within .text use sans-serif fallback */
-         .weather-details .text p {
-             font-family: sans-serif; /* Use fallback font for 'Humidity'/'Wind Speed' labels */
-         }
+        .footer-section p { margin-bottom: 5px; }
+        .footer-section a { color: inherit !important; }
 
+        /* --- Desktop Responsive Layout Changes --- */
+        @media (min-width: 768px) {
+            .container { width: 600px; padding: 35px; gap: 25px; }
+            .search-box .input-box { font-size: 22px; padding: 14px 18px; width: 88%; padding-right: 35px; background-position: right 15px center; background-size: 15px; }
+            .search-box button { width: 50px; height: 50px; font-size: 22px; }
+            .weather-body .weather-img { width: 40%; margin-block: 15px; }
+            .weather-box .temperature { font-size: 50px; }
+            .weather-box .description { font-size: 22px; }
+            .weather-details { margin-top: 40px; }
+            .forecast-cards { overflow-x: visible; justify-content: space-around; gap: 15px; padding-bottom: 0; }
+            .forecast-card { min-width: 100px; padding: 12px 8px; flex-grow: 1; flex-shrink: 1; flex-basis: 0; }
+            .forecast-card .time { font-size: 15px; }
+            .forecast-card img { width: 50px; }
+            .forecast-card .temp { font-size: 18px; }
+            .forecast-card .description { font-size: 12px; }
+            .weather-scene-img { width: calc(100% + 70px); height: 220px; object-fit: contain; margin: 0 -35px -35px -35px; }
+            .footer-hr { margin-top: 30px; }
+            .footer-section { font-size: 13px; }
+        }
+
+        @media (min-width: 992px) {
+             .container { width: 750px; gap: 30px; }
+             .weather-body .weather-img { width: 35%; }
+             .forecast-cards { gap: 20px; }
+             .forecast-card { min-width: 120px; }
+             .weather-scene-img { width: calc(100% + 70px); height: 250px; object-fit: contain; margin: 0 -35px -35px -35px; }
+        }
 
     </style>
-
-    <!-- Font Awesome CDN - Using a standard link for better compatibility -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9xItngKFig6fIL8P/aGg==' crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 </head>
 <body>
 
     <div class="container">
 
-        <!-- --- Search Box - Always visible --- -->
+        <!-- --- Header (contains Search Box only) --- -->
         <div class="header">
             <div class="search-box">
-                <input type="text" placeholder="Enter your location" class="input-box">
+                <!-- Select dropdown for TN Districts (English Names) -->
+                <select class="input-box">
+                    <option value="">Select a Tamil Nadu District</option>
+                    <option value="Ariyalur">Ariyalur</option>
+                    <option value="Chengalpattu">Chengalpattu</option>
+                    <option value="Chennai">Chennai</option>
+                    <option value="Coimbatore">Coimbatore</option>
+                    <option value="Cuddalore">Cuddalore</option>
+                    <option value="Dharmapuri">Dharmapuri</option>
+                    <option value="Dindigul">Dindigul</option>
+                    <option value="Erode">Erode</option>
+                    <option value="Kallakurichi">Kallakurichi</option>
+                    <option value="Kanchipuram">Kanchipuram</option>
+                    <option value="Kanyakumari">Kanyakumari</option>
+                    <option value="Karur">Karur</option>
+                    <option value="Krishnagiri">Krishnagiri</option>
+                    <option value="Madurai">Madurai</option>
+                    <option value="Mayiladuthurai">Mayiladuthurai</option>
+                    <option value="Nagapattinam">Nagapattinam</option>
+                    <option value="Namakkal">Namakkal</option>
+                    <option value="Nilgiris">Nilgiris</option>
+                    <option value="Perambalur">Perambalur</option>
+                    <option value="Pudukkottai">Pudukkottai</option>
+                    <option value="Ramanathapuram">Ramanathapuram</option>
+                    <option value="Ranipet">Ranipet</option>
+                    <option value="Salem">Salem</option>
+                    <option value="Sivaganga">Sivaganga</option>
+                    <option value="Tenkasi">Tenkasi</option>
+                    <option value="Thanjavur">Thanjavur</option>
+                    <option value="Theni">Theni</option>
+                    <option value="Thoothukudi">Thoothukudi (Tuticorin)</option>
+                    <option value="Tiruchirappalli">Tiruchirappalli</option>
+                    <option value="Tirunelveli">Tirunelveli</option>
+                    <option value="Tirupattur">Tirupattur</option>
+                    <option value="Tiruppur">Tiruppur</option>
+                    <option value="Tiruvallur">Tiruvallur</option>
+                    <option value="Tiruvannamalai">Tiruvannamalai</option>
+                    <option value="Tiruvarur">Tiruvarur</option>
+                    <option value="Vellore">Vellore</option>
+                    <option value="Viluppuram">Viluppuram</option>
+                    <option value="Virudhunagar">Virudhunagar</option>
+                </select>
                 <button class="fa-solid fa-magnifying-glass" id="searchBtn"></button>
             </div>
         </div>
-        <!-- --- End Search Box --- -->
+        <!-- --- End Header --- -->
 
 
         <!-- --- Content that shows on the "second page" (after search) --- -->
-        <div class="second-page-content"> <!-- Initially hidden via CSS -->
+        <div class="second-page-content">
 
-            <!-- Time and Date Section (above HR) -->
-            <div class="time-date-section">
-                 <p class="current-time">00:00:00</p> <!-- Time - This will be updated by JS -->
-                 <p class="current-date">Date</p> <!-- Date -->
-            </div>
-            <!-- End Time and Date Section -->
+             <!-- Time and Date Section -->
+             <div class="time-date-section">
+                  <p class="current-time">00:00:00 AM</p> <!-- Time - Updated by JS (12-hour format) -->
+                  <p class="current-date">Date</p> <!-- Date - Updated by JS -->
+             </div>
+             <!-- End Time and Date Section -->
 
-            <hr> <!-- HR line between Time/Date and Greeting -->
+             <hr> <!-- HR line after Time/Date -->
 
-            <!-- Greeting Section (below HR) -->
-            <p class="greeting">Hello!</p> <!-- Greeting -->
-            <!-- End Greeting Section -->
+             <!-- Greeting Section -->
+             <p class="greeting">Hello!</p> <!-- Greeting - Updated by JS -->
+             <!-- End Greeting Section -->
+
+             <hr> <!-- HR line after Greeting -->
+
+             <!-- Location Not Found Section -->
+             <div class="location-not-found">
+                 <h1>Sorry, Location not found!!!</h1>
+                 <img src="https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/404.png" alt="404 Error">
+             </div>
+
+             <!-- Weather Body Section (Current Weather) -->
+             <div class="weather-body">
+                 <!-- Weather Image (Smaller Icon) -->
+                 <img src="https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/cloud.png" alt="Weather Icon" class="weather-img">
+
+                 <div class="weather-box">
+                     <p class="temperature">0 <sup>°C</sup></p>
+                     <p class="description">light rain</p>
+                 </div>
+
+                 <div class="weather-details">
+                     <div class="humidity">
+                         <img src="https://assets.onecompiler.app/3zky9aw9p/43k8yhpfc/20250530_104626.png" alt="Humidity icon">
+                         <div class="text">
+                             <span id="humidity">45%</span>
+                             <p>Humidity</p>
+                         </div>
+                     </div>
+                     <div class="wind">
+                         <img src="https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/mist.png" alt="Wind icon">
+                         <div class="text">
+                             <span id="wind-speed">12Km/H</span>
+                             <p>Wind Speed</p>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <!-- End Weather Body Section -->
+
+             <hr> <!-- HR line after Weather Body / Location Not Found -->
 
 
-            <!-- Weather Body, Not Found, Forecast (Initially hidden, managed by JS) -->
-            <div class="location-not-found">
-                <h1>Sorry, Location not found!!!</h1>
-                <!-- Ensure this image file exists in your /assets folder on onecompiler -->
-                <img src="/assets/404.png" alt="404 Error">
-            </div>
+             <!-- --- Hourly Forecast Section (~36 Hours) --- -->
+             <!-- Added distinct ID/Class -->
+             <div class="forecast-section" id="hourly-forecast-section">
+                  <h2>Next 36 Hours Forecast</h2>
+                  <div class="forecast-cards" id="hourly-forecast-cards">
+                      <!-- Hourly forecast cards will be inserted here by JavaScript -->
+                  </div>
+             </div>
+              <!-- --- End Hourly Forecast Section --- -->
 
-            <div class="weather-body">
-                <!-- Set initial image using Cloud URL from onecompiler -->
-                <img src="https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/cloud.png" alt="Weather Image" class="weather-img">
+              <hr> <!-- HR line after Hourly Forecast -->
 
-                <div class="weather-box">
-                    <p class="temperature">0 <sup>°C</sup></p>
-                    <p class="description">light rain</p>
-                </div>
+             <!-- --- Daily Forecast Section (5 Days) --- -->
+             <!-- Added distinct ID/Class -->
+             <div class="forecast-section" id="daily-forecast-section">
+                  <h2>Next 5 Days Forecast</h2>
+                  <div class="forecast-cards" id="daily-forecast-cards">
+                      <!-- Daily forecast cards will be inserted here by JavaScript -->
+                  </div>
+             </div>
+              <!-- --- End Daily Forecast Section --- -->
 
-                <div class="weather-details">
-                    <div class="humidity">
-                        <!-- Replaced Font Awesome i tag with img and updated src -->
-                        <img src="https://assets.onecompiler.app/3zky9aw9p/43k8yhpfc/20250530_104626.png" alt="Humidity icon">
-                        <div class="text">
-                            <span id="humidity">45%</span>
-                            <p>Humidity</p>
-                        </div>
-                    </div>
+              <hr> <!-- HR line after Daily Forecast -->
 
-                    <div class="wind">
-                        <!-- Replaced fa-solid fa-wind with img mist -->
-                        <img src="https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/mist.png" alt="Wind icon">
-                        <div class="text">
-                            <span id="wind-speed">12Km/H</span>
-                            <p>Wind Speed</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-           <hr></hr>
-            <!-- --- Forecast Section --- -->
-            <div class="forecast-section">
-                <h2>5-Day Forecast</h2>
-                <div class="forecast-cards">
-                    <!-- Forecast cards will be inserted here by JavaScript -->
-                </div>
-            </div>
-             <!-- --- End Weather Body, Not Found, Forecast --- -->
+              <!-- Weather Scene Image -->
+              <img src="https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/04-mostly-cloudy-day-home-flowers_c.png" alt="Weather Scene" class="weather-scene-img">
+               <!-- End Weather Scene Image -->
 
-            <!-- --- Footer Section --- -->
-            <hr class="footer-hr"> <!-- HR line above the footer -->
-            <div class="footer-section">
-                <p>Weather data provided by OpenWeatherMap</p>
-                <p>Developed by EV Sanjeevan</p>
-            </div>
-            <!-- --- End Footer Section --- -->
+             <!-- --- Footer Section --- -->
+             <div class="footer-section">
+                 <p>Weather data provided by <a href="https://openweathermap.org/" target="_blank">OpenWeatherMap</a></p>
+                 <p>Developed by EV Sanjeevan</p>
+             </div>
+             <!-- --- End Footer Section --- -->
 
         </div>
         <!-- --- End Second Page Content --- -->
@@ -535,62 +568,62 @@
     <!-- Your combined JavaScript code -->
     <script>
         // --- JavaScript for Time, Date, and Greeting ---
-        // Select elements within the second-page-content
         const greetingElement = document.querySelector('.second-page-content .greeting');
         const timeElement = document.querySelector('.second-page-content .current-time');
         const dateElement = document.querySelector('.second-page-content .current-date');
-        const secondPageContent = document.querySelector('.second-page-content'); // Element to hide/show
+        const secondPageContent = document.querySelector('.second-page-content');
 
+        // Function to update time, date, and greeting (remains the same logic)
         function updateDateTimeAndGreeting() {
             const now = new Date();
-
-            // Get time components (24-hour format)
             const hours24 = now.getHours();
             const minutes = now.getMinutes();
             const seconds = now.getSeconds();
 
-            // --- Format time in 12-hour format (h:MM:SS AM/PM) ---
-            const ampm = hours24 >= 12 ? 'PM' : 'AM'; // Determine AM or PM
-            let hours12 = hours24 % 12; // Convert 0-23 to 0-11
+            // 12-hour format (h:MM:SS AM/PM)
+            const ampm = hours24 >= 12 ? 'PM' : 'AM';
+            let hours12 = hours24 % 12;
             hours12 = hours12 ? hours12 : 12; // Convert 0 (midnight) to 12
 
-            // Format minutes and seconds with leading zeros
+            const formattedHours12 = String(hours12);
             const formattedMinutes = String(minutes).padStart(2, '0');
             const formattedSeconds = String(seconds).padStart(2, '0');
 
-            // Combine for the final formatted time string
-            const formattedTime = `${hours12}:${formattedMinutes}:${formattedSeconds} ${ampm}`;
-            timeElement.textContent = formattedTime; // Update the time element
+            const formattedTime = `${formattedHours12}:${formattedMinutes}:${formattedSeconds} ${ampm}`;
+            if (timeElement) timeElement.textContent = formattedTime;
 
-            // --- Determine greeting based on 24-hour format ---
-            let greeting = "Hello!"; // Default for times outside defined ranges
+            // Greeting
+            let greeting = "Hello!";
             if (hours24 >= 5 && hours24 < 12) {
-                greeting = "Good Morning!"; // காலை 5 மணி முதல் 11 மணி 59 நிமிடம் வரை
+                greeting = "Good Morning!";
             } else if (hours24 >= 12 && hours24 < 17) {
-                greeting = "Good Afternoon!"; // பகல் 12 மணி முதல் மாலை 4 மணி 59 நிமிடம் வரை
+                greeting = "Good Afternoon!";
             } else if (hours24 >= 17 && hours24 < 21) {
-                greeting = "Good Evening!"; // மாலை 5 மணி முதல் இரவு 8 மணி 59 நிமிடம் வரை
-            } else { // hours 21, 22, 23, 0, 1, 2, 3, 4
-                greeting = "Good Night!"; // இரவு 9 மணி முதல் காலை 4 மணி 59 நிமிடம் வரை
+                greeting = "Good Evening!";
+            } else {
+                greeting = "Good Night!";
             }
-            greetingElement.textContent = greeting; // Update the greeting element
+            if (greetingElement) greetingElement.textContent = greeting;
 
-            // --- Get date components and format (e.g., Friday, May 30, 2025) ---
+            // Date
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const formattedDate = now.toLocaleDateString('en-US', options); // Use locale string for full date
-            dateElement.textContent = formattedDate; // Update the date element
+            const formattedDate = now.toLocaleDateString('en-US', options);
+            if (dateElement) dateElement.textContent = formattedDate;
         }
 
-        // Start the time/date update (it runs in the background even if hidden)
+        // Start updating time/date/greeting immediately
         updateDateTimeAndGreeting();
-        setInterval(updateDateTimeAndGreeting, 1000); // Update every 1000ms (1 second)
-        // --- End JavaScript ---
+        // Set interval only if elements exist (they do in the HTML)
+        setInterval(updateDateTimeAndGreeting, 1000);
+
+        // --- End JavaScript for Time, Date, and Greeting ---
 
 
-        // --- Existing JavaScript for Weather App ---
-        const inputBox = document.querySelector('.input-box');
+        // --- Weather App Core JavaScript ---
+        const inputBox = document.querySelector('.search-box .input-box'); // Select element
         const searchBtn = document.getElementById('searchBtn');
         const weather_img = document.querySelector('.weather-img');
+        const weatherSceneImg = document.querySelector('.weather-scene-img');
         const temperature = document.querySelector('.temperature');
         const description = document.querySelector('.description');
         const humidity = document.getElementById('humidity');
@@ -598,24 +631,41 @@
 
         const location_not_found = document.querySelector('.location-not-found');
         const weather_body = document.querySelector('.weather-body');
-        const forecast_section = document.querySelector('.forecast-section'); // Added
-        const forecast_cards_container = document.querySelector('.forecast-cards'); // Added
 
-        // Your API key
-        const api_key = "105492d9afbc089c7e7f6225a38770e9";
+        // Specific elements for the two forecast sections
+        const hourly_forecast_section = document.getElementById('hourly-forecast-section');
+        const hourly_forecast_cards_container = document.getElementById('hourly-forecast-cards');
+        const daily_forecast_section = document.getElementById('daily-forecast-section');
+        const daily_forecast_cards_container = document.getElementById('daily-forecast-cards');
 
-        // Helper function to get weather image URL based on main weather condition
-        function getWeatherImage(weatherMain){
+
+        const api_key = "105492d9afbc089c7e7f6225a38770e9"; // Your API key
+
+        // Helper function for the SMALL weather icon URL (remains the same)
+        function getWeatherIcon(weatherMain){
             switch(weatherMain){
-                case 'Clouds':
-                    return "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/cloud.png";
                 case 'Clear':
-                    // This is where the clear image URL is used
-                    return "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/clear.png";
+                     const hour = new Date().getHours();
+                     if (hour >= 18 || hour < 6) {
+                         return "https://assets.onecompiler.app/3zky9aw9p/43k9mw5b9/file_00000000fe9861f889d4c040b07cb857.png"; // Moon
+                     } else {
+                         return "https://assets.onecompiler.app/3zky9aw9p/43k9mw5b9/clear.png"; // Sun
+                     }
+                case 'Clouds':
+                    const currentHour = new Date().getHours();
+                     if (currentHour >= 18 || currentHour < 6) {
+                          return "https://assets.onecompiler.app/3zky9aw9p/43k9mw5b9/file_00000000f68861f7abd746f0bef40a6b.png"; // Moon cloud
+                     } else {
+                         return "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/cloud.png"; // Standard cloud
+                     }
                 case 'Rain':
-                case 'Drizzle': // Treat Drizzle and Rain similarly for images
-                    // Using MIST URL for Rain/Drizzle as dedicated Rain URL not provided
-                    return "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/mist.png";
+                case 'Drizzle':
+                    return "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/rain.png";
+                case 'Thunderstorm':
+                    // Using snow icon as originally seen, or replace with a lightning one
+                     return "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/snow.png";
+                case 'Snow':
+                    return "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/snow.png";
                 case 'Mist':
                 case 'Smoke':
                 case 'Haze':
@@ -624,193 +674,329 @@
                 case 'Sand':
                 case 'Ash':
                 case 'Squall':
-                case 'Tornado': // Treat various atmospheric conditions similarly
-                    return "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/mist.png";
-                case 'Snow':
-                    return "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/snow.png";
-                case 'Thunderstorm':
-                    // Using MIST URL for Thunderstorm
-                    return "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/mist.png";
+                case 'Tornado':
+                     return "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/mist.png";
                 default:
-                    // Default to CLOUD URL for unknown conditions
-                    console.log("Unknown weather condition:", weatherMain); // Log unknown condition
-                    return "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/cloud.png";
+                    console.log("Unknown weather icon condition:", weatherMain);
+                    return "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/cloud.png"; // Default icon
             }
         }
 
-        // Function to fetch and display forecast
-        async function checkForecast(city) {
-             // Clear previous forecast data
-            forecast_cards_container.innerHTML = '';
-            forecast_section.style.display = 'none'; // Hide while fetching or if city is not found
+        // Helper function for the LARGER weather SCENE image URL (remains the same)
+        function getWeatherSceneImage(weatherMain, description, hour24){
+            const isDay = hour24 >= 6 && hour24 < 18;
 
-            const forecast_url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${api_key}&units=metric`;
-
-            try {
-                const response = await fetch(forecast_url);
-                const forecast_data = await response.json();
-
-                 // The current weather check already handles city not found (cod 404)
-                 // If we reach here, the current weather was found, so forecast should also work,
-                 // but let's add a basic check just in case, though less likely.
-                 if(forecast_data.cod !== "200"){
-                     console.error("Error fetching forecast data:", forecast_data.message);
-                     forecast_section.style.display = 'none'; // Hide forecast if API call fails
-                     return;
+            if (weatherMain === 'Clear') {
+                 if (isDay) {
+                     const sunnyScenes = [
+                         "https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/01-sunny-citypark-sunbathing_c.png",
+                         "https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/01-sunny-field-kite_c.png",
+                         "https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/01-sunny-orchard-picking.png"
+                     ];
+                     return sunnyScenes[0];
+                 } else {
+                     return "https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/08-mostly-cloudy-night-home-inside.png";
                  }
-
-                // Process forecast data to get one entry per day
-                const dailyForecasts = [];
-                const seenDates = new Set();
-
-                // OpenWeatherMap forecast provides data every 3 hours for 5 days
-                // We'll pick the first entry for each distinct date.
-                for (const item of forecast_data.list) {
-                    const dateString = item.dt_txt.split(' ')[0]; // Get the date part (YYYY-MM-DD)
-                    if (!seenDates.has(dateString)) {
-                        seenDates.add(dateString);
-                        dailyForecasts.push(item);
-                        if (dailyForecasts.length === 5) {
-                            break; // We only need 5 days
-                        }
-                    }
-                }
-
-                // Display the 5-day forecast
-                if (dailyForecasts.length > 0) {
-                    forecast_section.style.display = 'flex'; // Show the forecast section
-                    forecast_cards_container.innerHTML = ''; // Clear before adding new cards
-
-                    dailyForecasts.forEach(dayData => {
-                        const date = new Date(dayData.dt * 1000); // Convert timestamp to Date object
-                        const options = { weekday: 'short' }; // Get short day name (e.g., Mon)
-                        const dayName = date.toLocaleDateString('en-US', options);
-
-                        // Use the helper function to get the correct icon URL
-                        const iconUrl = getWeatherImage(dayData.weather[0].main);
-                        const temp = Math.round(dayData.main.temp);
-                        const description = dayData.weather[0].description;
-
-                        // Create the forecast card HTML
-                        const forecastCard = document.createElement('div');
-                        forecastCard.classList.add('forecast-card');
-
-                        forecastCard.innerHTML = `
-                            <div class="day">${dayName}</div>
-                            <img src="${iconUrl}" alt="${description}">
-                            <div class="temp">${temp}°C</div>
-                            <div class="description">${description}</div>
-                        `;
-
-                        forecast_cards_container.appendChild(forecastCard);
-                    });
-                } else {
-                     console.log("Not enough forecast data received.");
-                     forecast_section.style.display = 'none';
-                }
-
-
-            } catch (error) {
-                console.error("Error fetching forecast data:", error);
-                forecast_section.style.display = 'none'; // Hide forecast on error
+            } else if (weatherMain === 'Clouds') {
+                 if (isDay) {
+                     const cloudyDayScenes = [
+                         "https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/04-mostly-cloudy-day-home-flowers_c.png",
+                         "https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/04-mostly-cloudy-day-hills-painting_f.png"
+                     ];
+                     return cloudyDayScenes[0];
+                 } else {
+                     return "https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/08-mostly-cloudy-night-home-inside.png";
+                 }
+            } else if (weatherMain === 'Rain' || weatherMain === 'Drizzle') {
+                 const rainScenes = [
+                     "https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/19-mixed-rain-hail-rain-sleet-cafe-entering.png",
+                     "https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/19-mixed-rain-hail-rain-sleet-busstop-waiting.png"
+                 ];
+                 return rainScenes[0];
+            } else if (weatherMain === 'Thunderstorm') {
+                 return "https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/22-iso-thunderstorms-home-inside.png";
+            } else if (weatherMain === 'Snow') {
+                 const snowScenes = [
+                     "https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/13-flurries-citypark-snowman.png",
+                     "https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/13-flurries-creek-iceskating.png"
+                 ];
+                 return snowScenes[0];
+            } else if (description && (description.includes('wind') || description.includes('breezy'))) {
+                 return "https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/25-breezy-windy-home-laundry.png";
             }
+
+            return "https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/04-mostly-cloudy-day-home-flowers_c.png"; // Default
         }
 
 
+        // Function to display current weather data
+        function displayWeatherData(weather_data) {
+             location_not_found.style.display = "none"; // Hide error message
+             weather_body.style.display = "flex"; // Show current weather body
+             // Keep forecasts hidden initially while we fetch them
+             hourly_forecast_section.style.display = "none";
+             daily_forecast_section.style.display = "none";
+             hourly_forecast_cards_container.innerHTML = ''; // Clear previous forecast
+             daily_forecast_cards_container.innerHTML = ''; // Clear previous forecast
+
+             const currentHour = new Date().getHours();
+             weatherSceneImg.src = getWeatherSceneImage(weather_data.weather[0].main, weather_data.weather[0].description, currentHour);
+
+             weather_img.src = getWeatherIcon(weather_data.weather[0].main);
+             temperature.innerHTML = `${Math.round(weather_data.main.temp)}<sup>°C</sup>`;
+             description.innerHTML = `${weather_data.weather[0].description}`;
+             humidity.innerHTML = `${Math.round(weather_data.main.humidity)}%`;
+             // Convert wind speed from m/s to Km/H
+             wind_speed.innerHTML = `${Math.round(weather_data.wind.speed * 3.6)}Km/H`;
+
+             console.log("Current weather data:", weather_data);
+
+             // Call both forecast functions after current weather is displayed
+             checkHourlyForecast(weather_data.name);
+             checkDailyForecast(weather_data.name);
+        }
+
+        // Function to handle errors
+        function handleWeatherError(message = "Sorry, Location not found!!!") {
+            // Always show second-page-content to display the error message area
+            secondPageContent.style.display = "flex";
+            weather_body.style.display = "none"; // Hide current weather body
+            hourly_forecast_section.style.display = "none"; // Hide hourly forecast section
+            daily_forecast_section.style.display = "none"; // Hide daily forecast section
+            hourly_forecast_cards_container.innerHTML = ''; // Clear forecast cards
+            daily_forecast_cards_container.innerHTML = ''; // Clear forecast cards
+            location_not_found.style.display = "flex"; // Show location not found message
+            location_not_found.querySelector('h1').textContent = message; // Set error message
+            weatherSceneImg.src = "https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/04-mostly-cloudy-day-home-flowers_c.png"; // Default/Error scene
+            console.error("Weather fetch error:", message);
+        }
+
+        // Function to fetch weather data by city name
         async function checkWeather(city){
-            // Ensure the city is not empty
             const trimmedCity = city.trim();
-            if (trimmedCity === "") {
-                // If input is empty, hide the second page content
+            // Check if the default option is selected or city is empty
+            if (trimmedCity === "" || trimmedCity === "Select a Tamil Nadu District") {
+                // Hide all second page content if no valid district is selected
                 secondPageContent.style.display = "none";
-                // Reset displayed data (optional)
+                location_not_found.style.display = "none";
+                weather_body.style.display = "none";
+                hourly_forecast_section.style.display = 'none';
+                daily_forecast_section.style.display = 'none';
+                hourly_forecast_cards_container.innerHTML = '';
+                daily_forecast_cards_container.innerHTML = '';
+
+
+                // Reset default values (Optional, but good for clarity)
                 temperature.innerHTML = `0 <sup>°C</sup>`;
                 description.innerHTML = ``;
                 humidity.innerHTML = `45%`;
                 wind_speed.innerHTML = `12Km/H`;
-                // Reset default image to CLOUD URL when input is empty
                 weather_img.src = "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/cloud.png";
-                forecast_cards_container.innerHTML = '';
-                forecast_section.style.display = 'none'; // Ensure forecast is hidden if input is empty
-                location_not_found.style.display = "none"; // Also hide not found
-                return; // Stop here
+                weatherSceneImg.src = "https://assets.onecompiler.app/3zky9aw9p/43m63n2qa/04-mostly-cloudy-day-home-flowers_c.png";
+
+                console.log("No district selected.");
+                return; // Stop here if no district is selected
             }
 
-            // Using the current weather endpoint
-            const url = `https://api.openweathermap.org/data/2.5/weather?q=${trimmedCity}&appid=${api_key}&units=metric`; // Added units=metric for Celsius directly
+            // Construct URL for current weather
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${trimmedCity},IN&appid=${api_key}&units=metric`; // Added ,IN
+
+            // Show the second-page-content area *immediately* when search starts
+            // This makes the Time, Date, and Greeting visible
+            secondPageContent.style.display = "flex";
+            // Hide specific sections while fetching/processing
+            weather_body.style.display = "none";
+            location_not_found.style.display = "none";
+            hourly_forecast_section.style.display = "none";
+            daily_forecast_section.style.display = "none";
+            hourly_forecast_cards_container.innerHTML = ''; // Clear old forecast
+            daily_forecast_cards_container.innerHTML = ''; // Clear old forecast
+
 
             try {
                 const response = await fetch(url);
                 const weather_data = await response.json();
 
-                // Always show the second page content when a search is performed
-                secondPageContent.style.display = "flex";
-
                 if(weather_data.cod === `404`){
-                    // If location not found, show the not found message and hide weather/forecast
-                    location_not_found.style.display = "flex";
-                    weather_body.style.display = "none";
-                    forecast_section.style.display = "none"; // Hide forecast if location not found
-                    console.log("Location not found");
-                     // Clear previous forecast data
-                    forecast_cards_container.innerHTML = '';
-                    return; // Stop here
+                    handleWeatherError("Sorry, weather data not found for this district.");
+                } else {
+                    displayWeatherData(weather_data); // Display current weather and then trigger forecasts
                 }
-
-                // If location is found and data is okay, show weather body and fetch forecast
-                location_not_found.style.display = "none";
-                weather_body.style.display = "flex";
-                // Forecast display is handled by checkForecast
-
-                // Update current weather details
-                temperature.innerHTML = `${Math.round(weather_data.main.temp)}<sup>°C</sup>`;
-                description.innerHTML = `${weather_data.weather[0].description}`;
-                humidity.innerHTML = `${weather_data.main.humidity}%`;
-                // Wind speed is in meter/sec, convert to Km/H and round
-                wind_speed.innerHTML = `${Math.round(weather_data.wind.speed * 3.6)}Km/H`;
-
-                // Update current weather image using helper function
-                weather_img.src = getWeatherImage(weather_data.weather[0].main);
-
-                console.log("Current weather data:", weather_data); // Log the full data for debugging
-
-                // --- Call the forecast function after successful current weather check ---
-                checkForecast(trimmedCity);
 
             } catch (error) {
                 console.error("Error fetching current weather data:", error);
-                 // Always show the second page content on error
-                secondPageContent.style.display = "flex";
-                // Display location not found message for other fetch errors too
-                location_not_found.style.display = "flex";
-                weather_body.style.display = "none";
-                forecast_section.style.display = "none"; // Hide forecast on error
-                 // Optional: Reset displayed data
-                 temperature.innerHTML = `0 <sup>°C</sup>`;
-                 description.innerHTML = ``;
-                 humidity.innerHTML = `45%`;
-                 wind_speed.innerHTML = `12Km/H`;
-                 // Reset default image to CLOUD URL
-                 weather_img.src = "https://assets.onecompiler.app/3zky9aw9p/43k8p4exm/cloud.png";
-                 // Clear previous forecast data
-                 forecast_cards_container.innerHTML = '';
+                handleWeatherError("Failed to fetch weather data. Please try again.");
             }
         }
 
+        // Function to fetch and display Hourly forecast (~36 hours / 12 entries)
+        async function checkHourlyForecast(city) {
+             hourly_forecast_cards_container.innerHTML = ''; // Clear existing cards
+             hourly_forecast_section.style.display = 'none'; // Hide section initially
+
+             // Use the 5-day / 3-hour forecast endpoint
+             const forecast_url = `https://api.openweathermap.org/data/2.5/forecast?q=${city},IN&appid=${api_key}&units=metric`; // Added ,IN
+
+             try {
+                 const response = await fetch(forecast_url);
+                 const forecast_data = await response.json();
+
+                 if(forecast_data.cod !== "200"){
+                     console.error("Error fetching hourly forecast data:", forecast_data.message);
+                     hourly_forecast_section.style.display = 'none'; // Don't show section on error
+                     return;
+                 }
+
+                 const forecastList = forecast_data.list;
+                 // Take the first 12 entries for approx 36 hours (12 * 3 hours = 36)
+                 const forecastEntriesToShow = forecastList.slice(0, 12);
+
+                 // Display the hourly forecast cards
+                 if (forecastEntriesToShow.length > 0) {
+                     hourly_forecast_section.style.display = 'flex'; // Show the section
+                     hourly_forecast_cards_container.innerHTML = ''; // Clear before adding new cards
+
+                     forecastEntriesToShow.forEach(hourData => {
+                         const date = new Date(hourData.dt * 1000); // Convert timestamp to Date object
+
+                         // Format the time (e.g., "3 PM") - Using 12-hour format with AM/PM
+                         const options = { hour: 'numeric', minute: '2-digit', hour12: true };
+                         const formattedTime = date.toLocaleTimeString('en-US', options);
+
+                         const iconUrl = getWeatherIcon(hourData.weather[0].main); // Use the small icon function
+                         const temp = Math.round(hourData.main.temp);
+                         const description = hourData.weather[0].description;
+
+                         // Create the forecast card HTML element
+                         const forecastCard = document.createElement('div');
+                         forecastCard.classList.add('forecast-card'); // Use the general forecast-card style
+
+                         forecastCard.innerHTML = `
+                             <div class="time">${formattedTime}</div> <!-- Displaying Time -->
+                             <img src="${iconUrl}" alt="${description}">
+                             <div class="temp">${temp}°C</div>
+                             <div class="description">${description}</div>
+                         `;
+
+                         hourly_forecast_cards_container.appendChild(forecastCard);
+                     });
+                 } else {
+                      console.log("Not enough hourly forecast data received.");
+                      hourly_forecast_section.style.display = 'none'; // Hide section if no data
+                 }
+
+             } catch (error) {
+                 console.error("Error fetching hourly forecast data:", error);
+                 hourly_forecast_section.style.display = 'none'; // Hide forecast section on fetch error
+             }
+         }
+
+         // Function to fetch and display Daily forecast (5 days)
+         async function checkDailyForecast(city) {
+              daily_forecast_cards_container.innerHTML = ''; // Clear existing cards
+              daily_forecast_section.style.display = 'none'; // Hide section initially
+
+              // Use the 5-day / 3-hour forecast endpoint (same endpoint, different processing)
+              const forecast_url = `https://api.openweathermap.org/data/2.5/forecast?q=${city},IN&appid=${api_key}&units=metric`; // Added ,IN
+
+              try {
+                  const response = await fetch(forecast_url);
+                  const forecast_data = await response.json();
+
+                  if(forecast_data.cod !== "200"){
+                      console.error("Error fetching daily forecast data:", forecast_data.message);
+                      daily_forecast_section.style.display = 'none'; // Don't show section on error
+                      return;
+                  }
+
+                  const forecastList = forecast_data.list;
+                  const dailyForecasts = [];
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0); // Set to start of today
+
+                  // Filter and select one entry per day for the *next* 5 full days
+                  // Iterate through the 3-hour entries
+                  for (const entry of forecastList) {
+                       const entryDate = new Date(entry.dt * 1000);
+                       const dayString = entryDate.toDateString(); // e.g., "Tue Jan 15 2024"
+
+                       // Only consider entries from tomorrow onwards, and up to the next 5 unique days
+                       if (entryDate >= today) {
+                           // Check if we already have an entry for this day
+                           const existingEntryIndex = dailyForecasts.findIndex(item =>
+                                new Date(item.dt * 1000).toDateString() === dayString
+                           );
+
+                           if (existingEntryIndex === -1) {
+                                // This is the first entry found for this day, add it
+                                dailyForecasts.push(entry);
+                           } else {
+                                // If we already have an entry for this day,
+                                // you *could* choose to update it with the warmest temp,
+                                // or just keep the first one (which is often around morning).
+                                // For simplicity, we'll keep the first one found for that day.
+                           }
+                       }
+                  }
+
+                   // Take the first 5 distinct daily entries found
+                   const dailyForecastsToShow = dailyForecasts.slice(0, 5);
+
+                   if (dailyForecastsToShow.length > 0) {
+                      daily_forecast_section.style.display = 'flex'; // Show the section
+                      daily_forecast_cards_container.innerHTML = ''; // Clear before adding new cards
+
+                      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+                      dailyForecastsToShow.forEach(dayData => {
+                           const date = new Date(dayData.dt * 1000);
+                           const dayName = dayNames[date.getDay()]; // Get day name
+
+                           const iconUrl = getWeatherIcon(dayData.weather[0].main); // Use the small icon function
+                           const temp = Math.round(dayData.main.temp);
+                           const description = dayData.weather[0].description;
+
+                           // Create the forecast card HTML element
+                           const forecastCard = document.createElement('div');
+                           forecastCard.classList.add('forecast-card'); // Use the general forecast-card style
+
+                           forecastCard.innerHTML = `
+                                <div class="time">${dayName}</div> <!-- Displaying Day Name -->
+                                <img src="${iconUrl}" alt="${description}">
+                                <div class="temp">${temp}°C</div>
+                                <div class="description">${description}</div>
+                           `;
+
+                           daily_forecast_cards_container.appendChild(forecastCard);
+                       });
+                  } else {
+                       console.log("Not enough daily forecast data received.");
+                       daily_forecast_section.style.display = 'none'; // Hide section if no data
+                  }
+
+
+              } catch (error) {
+                  console.error("Error fetching daily forecast data:", error);
+                  daily_forecast_section.style.display = 'none'; // Hide forecast section on fetch error
+              }
+          }
+
+
+        // Event listener for the search button
         searchBtn.addEventListener('click', ()=>{
-            checkWeather(inputBox.value);
+            checkWeather(inputBox.value); // Use the selected value from the dropdown
         });
 
-        // Optional: Allow searching by pressing Enter key in the input box
-        inputBox.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault(); // Prevent default form submission if it were inside a form
-                checkWeather(inputBox.value);
-            }
+        // You can also add a listener for 'change' event on the select box if you want
+        // the weather to update automatically when a district is selected without clicking the button
+        /*
+        inputBox.addEventListener('change', ()=>{
+             checkWeather(inputBox.value);
         });
+        */
 
-        // --- Initial State: The `.second-page-content` is hidden by CSS ---
-        // This makes sure only the search box is visible on page load.
+        // Initial State: The `.second-page-content` is hidden by CSS until a search happens.
+        // All sections within it (weather body, both forecasts) are also hidden by CSS or JS initially.
     </script>
 
 </body>
